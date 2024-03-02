@@ -7,6 +7,7 @@ const Payment = require('../models/Payment');
 exports.getPayments = async (req, res, next) => {
     let query;
 
+    console.log(req.user.role);
     if (req.user.role !== 'admin') {
         // Non-admin users can only see their own payments
         query = Payment.find({ user: req.user.id });
@@ -64,7 +65,10 @@ exports.getPayment = async (req, res, next) => {
 //@access registered
 exports.createPayment = async (req, res, next) => {
     try {
-        const { reservationId, amount, paymentMethod } = req.body;
+        const { amount, paymentMethod } = req.body;
+
+        req.body.reservation = req.params.reservationId;
+        reservationId = req.params.reservationId;
 
         // Validate if reservationId is provided
         if (!reservationId) {
@@ -76,6 +80,7 @@ exports.createPayment = async (req, res, next) => {
 
         // Check if the reservation exists
         const reservation = await Reservation.findById(reservationId);
+
         if (!reservation) {
             return res.status(404).json({
                 success: false,

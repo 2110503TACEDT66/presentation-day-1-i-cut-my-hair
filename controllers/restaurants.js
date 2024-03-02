@@ -106,9 +106,9 @@ exports.getRestaurant = async (req, res, next) => {
 //@route POST /api/v1/restaurant
 //@access registered
 exports.createRestaurant = async (req, res, next) => {
-    const { name, province } = req.body;
-    console.log(name + ',Thailand')
-    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${name + `,${province}` + ',Thailand'}`;
+    const { name, province, district } = req.body;
+    console.log(name + `,${district}` + `,${province}` + ',Thailand')
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${name + `,${district}` + `,${province}` + ',Thailand'}`;
 
     try {
         const response = await fetch(nominatimUrl);
