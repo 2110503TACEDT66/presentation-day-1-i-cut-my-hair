@@ -150,3 +150,32 @@ exports.updateRestaurant = async (req, res, next) => {
         });
     }
 };
+
+
+//@desc Delete single restaurant
+//@route DELETE /api/v1/restaurant/:id
+//@access registered
+exports.deleteRestaurant = async (req, res, next) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if (!restaurant) {
+            return res.status(400).json({
+                success: false,
+                message: `No restaurant with the id of ${req.params.id}`
+            });
+        }
+
+        await restaurant.deleteOne();
+
+        res.status(200).json({
+            success: true,
+            data: {}
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: 'Oh somthing went wrong! to deleteRestaurant.'
+        });
+    }
+};
