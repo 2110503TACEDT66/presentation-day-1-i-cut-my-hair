@@ -106,20 +106,42 @@ exports.getRestaurant = async (req, res, next) => {
 //@route POST /api/v1/restaurant
 //@access registered
 exports.createRestaurant = async (req, res, next) => {
-    try {
-        const restaurant = await Restaurant.create(req.body);
+    const { name, province } = req.body;
+    console.log(name + ',Thailand')
+    const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${name + `,${province}` + ',Thailand'}`;
 
-        res.status(201).json({
-            success: true,
-            data: restaurant
-        });
+    try {
+        const response = await fetch(nominatimUrl);
+        const data = await response.json();
+
+        if (data.length > 0) {
+            // Construct map link using the first result
+            console.log(data);
+            const { lat, lon } = data[0];
+            const mapLink = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
+
+            console.log({ mapLink });
+
+            // Add map link to the restaurant data
+            req.body.map = mapLink;
+
+            // Create the restaurant
+            const restaurant = await Restaurant.create(req.body);
+
+            res.status(201).json({
+                success: true,
+                data: restaurant
+            });
+        } else {
+            res.status(404).json({ error: 'Location not found' });
+        }
     } catch (err) {
-        console.log(err.stack);
+        console.error(err.stack);
         res.status(400).json({
             success: false,
-            message: 'Oh somthing went wrong! to createRestaurant.'
+            message: 'Something went wrong while creating the restaurant.'
         });
-    };
+    }
 };
 
 //@desc Update single restaurant
