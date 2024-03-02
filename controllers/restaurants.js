@@ -100,3 +100,53 @@ exports.getRestaurant = async (req, res, next) => {
         });
     }
 };
+
+
+//@desc Post single restaurant
+//@route POST /api/v1/restaurant
+//@access registered
+exports.createRestaurant = async (req, res, next) => {
+    try {
+        const restaurant = await Restaurant.create(req.body);
+
+        res.status(201).json({
+            success: true,
+            data: restaurant
+        });
+    } catch (err) {
+        console.log(err.stack);
+        res.status(400).json({
+            success: false,
+            message: 'Oh somthing went wrong! to createRestaurant.'
+        });
+    };
+};
+
+//@desc Update single restaurant
+//@route PUT /api/v1/restaurant/:id
+//@access registered
+exports.updateRestaurant = async (req, res, next) => {
+    try {
+        const hospital = await Restaurant.findByIdAndUpdate(req.params.id, req.body, {
+            new: true,
+            runValidators: true
+        });
+
+        if (!hospital) {
+            return res.status(400).json({
+                success: false,
+                message: `No hospital with the id of ${req.params.id}`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: hospital
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: 'Oh somthing went wrong! to updateRestaurant.'
+        });
+    }
+};
