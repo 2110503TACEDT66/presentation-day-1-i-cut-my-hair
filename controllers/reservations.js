@@ -69,6 +69,15 @@ exports.getReservation = async (req, res, next) => {
             });
         }
 
+        // can only see self reservation
+
+        if (reservation.user.toString() !== req.user.id && req.user.role !== 'admin') {
+            return res.status(400).json({
+                success: false,
+                msg: `User ${req.user.id} is not authorized to see this reservation`
+            });
+        }
+
         res.status(200).json({
             success: true,
             data: reservation
