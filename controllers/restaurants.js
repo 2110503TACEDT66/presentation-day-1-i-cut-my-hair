@@ -74,3 +74,29 @@ exports.getRestaurants = async (req, res, next) => {
         console.log(err.stack);
     }
 };
+
+//@desc Get single restaurant
+// @route   GET /api/v1/restaurant/:id
+// @access  Private
+exports.getRestaurant = async (req, res, next) => {
+    try {
+        const restaurant = await Restaurant.findById(req.params.id);
+
+        if (!restaurant) {
+            return res.status(400).json({
+                success: false,
+                message: `No restaurant with the id of ${req.params.id}`
+            });
+        }
+
+        res.status(200).json({
+            success: true,
+            data: restaurant
+        });
+    } catch (err) {
+        res.status(400).json({
+            success: false,
+            message: 'Oh somthing went wrong! to getRestaurant.'
+        });
+    }
+};
