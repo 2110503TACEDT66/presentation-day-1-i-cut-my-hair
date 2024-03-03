@@ -192,7 +192,8 @@ exports.deleteRestaurant = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            data: {}
+            data: {},
+            msg : 'Restaurant deleted: ' + restaurant.name + ' in ' + restaurant.district + ' ' + restaurant.province + ' Thailand'
         });
     } catch (err) {
         res.status(400).json({
