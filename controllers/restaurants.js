@@ -187,13 +187,13 @@ exports.deleteRestaurant = async (req, res, next) => {
                 message: `No restaurant with the id of ${req.params.id}`
             });
         }
-
+        const restaurantName = restaurant.name;
         await restaurant.deleteOne();
 
         res.status(200).json({
             success: true,
             data: {},
-            msg : 'Restaurant deleted: ' + restaurant.name + ' in ' + restaurant.district + ' ' + restaurant.province + ' Thailand'
+            msg : 'Restaurant deleted: ' + restaurantName + ' in ' + restaurant.district + ' ' + restaurant.province + ' Thailand'
         });
     } catch (err) {
         res.status(400).json({
