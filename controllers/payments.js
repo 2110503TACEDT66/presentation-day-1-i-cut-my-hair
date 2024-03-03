@@ -11,7 +11,7 @@ exports.getPayments = async (req, res, next) => {
     if (req.user.role !== 'admin') {
         // Non-admin users can only see their own payments
         query = Payment.find({ user: req.user.id });
-    } else {
+    } else if(req.user.role === 'admin'){
         // Admin can see all payments
         query = Payment.find();
     }
@@ -88,6 +88,16 @@ exports.createPayment = async (req, res, next) => {
             });
         }
 
+        // Check if a payment already exists for the reservation
+        const existingPayment = await Payment.findOne({ reservation: reservationId });
+
+        if (existingPayment) {
+            return res.status(400).json({
+                success: false,
+                error: 'A payment already exists for this reservation'
+            });
+        }
+
         // Create the payment
         const payment = await Payment.create({
             reservation: reservationId,
@@ -107,6 +117,7 @@ exports.createPayment = async (req, res, next) => {
         });
     }
 }
+
 
 //@desc Update one payment
 //@route PUT /api/v1/payments/:id
