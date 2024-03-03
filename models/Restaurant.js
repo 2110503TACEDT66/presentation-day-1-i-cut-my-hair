@@ -4,7 +4,6 @@ const RestaurantSchema = new mongoose.Schema({
     name: {
         type: String,
         required: [true, 'Please add a name'],
-        unique: true,
         trim: true,
         maxlength: [50, 'Name can not be more than 50 characters']
     },
@@ -30,7 +29,8 @@ const RestaurantSchema = new mongoose.Schema({
         required: [true, 'Please add a region']
     },
     tel:{
-        type: String
+        type: String,
+        unique: true
     },
     opentime:{
         type: String,
@@ -43,7 +43,10 @@ const RestaurantSchema = new mongoose.Schema({
         required: [true, 'Please add a Close Time'],
         minlength: 5,
         maxlength: [5, 'Please label time in 24hr system']
-    }
+    },
+    map: {
+        type: String
+    },
 
     },{
         toJSON: {virtuals: true},

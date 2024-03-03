@@ -38,7 +38,7 @@ app.use(cors());
 app.use('/api/v1/restaurants', restaurant);
 app.use('/api/v1/auth', auth);
 app.use('/api/v1/reservations', reservation );
-app.use('api/v1/payments',payments);
+app.use('/api/v1/payments',payments);
 
 const PORT = process.env.PORT || 5000;
 const server = app.listen(PORT, console.log('server running in ',process.env.NODE_ENV, ' mode on port ', PORT));
@@ -49,3 +49,27 @@ process.on('unhandledRejection', (err,promise) => {
     //Close server and exit process
     server.close(()=> process.exit(1));
 });
+
+// app.get('/api/v1/map/search', async (req, res) => {
+//     // kfc,Mbk,Bangkok
+//     const { q } = req.query;
+//     const nominatimUrl = `https://nominatim.openstreetmap.org/search?format=json&q=${q}`;
+
+//     try {
+//         const response = await fetch(nominatimUrl);
+//         const data = await response.json();
+
+//         if (data.length > 0) {
+//             // Construct map link using the first result
+//             const { lat, lon } = data[0];
+//             const mapLink = `https://www.openstreetmap.org/?mlat=${lat}&mlon=${lon}#map=18/${lat}/${lon}`;
+
+//             res.json({ mapLink });
+//         } else {
+//             res.status(404).json({ error: 'Location not found' });
+//         }
+//     } catch (error) {
+//         console.error('Error fetching map data:', error);
+//         res.status(500).json({ error: 'Internal Server Error' });
+//     }
+// });
