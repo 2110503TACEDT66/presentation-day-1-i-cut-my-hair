@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
+const Payment = require('../models/Payment');
 
 // @desc    Get all reservations
 // @route   GET /api/v1/restaurants
@@ -19,7 +20,7 @@ exports.getReservations = async (req, res, next) => {
         //admin see all
         if (req.params.restaurantId) {
             console.log(req.params.restaurantId);
-            query = Reservation.find({ hospital: req.params.restaurantId }).populate({
+            query = Reservation.find({ restaurant: req.params.restaurantId }).populate({
                 path: 'restaurant',
                 select: 'name province tel'
             });
@@ -62,6 +63,8 @@ exports.getReservation = async (req, res, next) => {
             select: 'name province tel'
         });
 
+        console.log('Reservation:', reservation); // Log the reservation to check if it's null
+
         if (!reservation) {
             return res.status(404).json({
                 success: false,
@@ -69,8 +72,16 @@ exports.getReservation = async (req, res, next) => {
             });
         }
 
-        // can only see self reservation
+        const payment = await Payment.findOne({ reservation: req.params.id });
 
+        console.log('Payment:', payment); // Log the payment to check if it's null
+
+        let paymentMessage = 'No payment for this reservation';
+        if (payment) {
+            paymentMessage = payment;
+        }
+
+        // Ensure user is authorized to view this reservation
         if (reservation.user.toString() !== req.user.id && req.user.role !== 'admin') {
             return res.status(400).json({
                 success: false,
@@ -80,16 +91,20 @@ exports.getReservation = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            data: reservation
+            data: {
+                reservation: reservation,
+                payment: paymentMessage
+            }
         });
     } catch (err) {
-        console.log(err);
+        console.log(err); // Log any errors that occur
         return res.status(500).json({
             success: false,
-            msg: 'Cannot find reservation'
+            msg: 'An error occurred while fetching the reservation'
         });
     }
 }
+
 
 //@desc Post single reservation
 //@route POST /api/v1/restaurants/:id
