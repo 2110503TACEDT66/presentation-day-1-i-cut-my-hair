@@ -20,12 +20,22 @@ const ReservationSchema = new mongoose.Schema({
         default: Date.now
     }
 
+    },{
+        toJSON: {virtuals: true},
+        toObject: {virtuals: true}
     });
 
     ReservationSchema.pre('deleteOne', { document: true, query: false }, async function(next){
         console.log(`Payment being removed from reservation ${this._id}`);
         await this.model('Payment').deleteMany({reservation: this._id});
         next();
+    });
+
+    ReservationSchema.virtual('Payment', {
+        ref: 'Payment',
+        localField: '_id',
+        foreignField: 'reservation',
+        justOne: false
     });
 
 module.exports = mongoose.model('Reservation', ReservationSchema);
