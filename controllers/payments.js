@@ -5,44 +5,55 @@ const Payment = require('../models/Payment');
 // @route   GET /api/v1/payments
 // @access  Public
 exports.getPayments = async (req, res, next) => {
-    let query;
-
-    console.log(req.user.role);
-    if (req.user.role !== 'admin') {
-        // Non-admin users can only see their own payments
-        query = Payment.find({ user: req.user.id });
-    } else if(req.user.role === 'admin'){
-        // Admin can see all payments
-        query = Payment.find();
-    }
-
     try {
+        let query;
+
+        // Check if the user making the request is an admin
+        if (req.user.role === 'admin') {
+            // If admin, fetch all payments
+            query = Payment.find();
+        } else {
+            // If not admin, fetch payments only for that user
+            query = Payment.find().populate({
+                path: 'reservation',
+                match: { user: req.user.id }
+            });
+        }
+
         const payments = await query;
+
+        // Filter out payments where reservation is null (i.e., not owned by the user)
+        const userPayments = payments.filter(payment => payment.reservation !== null);
 
         res.status(200).json({
             success: true,
-            count: payments.length,
-            data: payments
+            count: userPayments.length,
+            data: userPayments
         });
     } catch (err) {
+        console.error(err);
         res.status(500).json({
             success: false,
             error: 'Server Error'
         });
     }
-}
+};
 
-// @desc    Get one payment
+
+// @desc    Get single payment
 // @route   GET /api/v1/payments/:id
-// @access  registered
+// @access  Public
 exports.getPayment = async (req, res, next) => {
     try {
-        const payment = await Payment.findById(req.params.id);
+        const payment = await Payment.findById(req.params.id).populate({
+            path: 'reservation',
+            match: { user: req.user.id }
+        });
 
-        if (!payment) {
+        if (!payment || !payment.reservation) {
             return res.status(404).json({
                 success: false,
-                error: `No payment with the id of ${req.params.id}`
+                error: `No payment found for the user with the id of ${req.user.id}`
             });
         }
 
@@ -51,13 +62,15 @@ exports.getPayment = async (req, res, next) => {
             data: payment
         });
     } catch (err) {
-        console.log(err);
+        console.error(err);
         return res.status(500).json({
             success: false,
             error: 'Server Error'
         });
     }
-}
+};
+
+
 
 
 //@desc Create payment for a reservation
