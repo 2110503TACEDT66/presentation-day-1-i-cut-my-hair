@@ -21,4 +21,11 @@ const ReservationSchema = new mongoose.Schema({
     }
 
     });
+
+    ReservationSchema.pre('deleteOne', { document: true, query: false }, async function(next){
+        console.log(`Payment being removed from reservation ${this._id}`);
+        await this.model('Payment').deleteMany({reservation: this._id});
+        next();
+    });
+
 module.exports = mongoose.model('Reservation', ReservationSchema);
