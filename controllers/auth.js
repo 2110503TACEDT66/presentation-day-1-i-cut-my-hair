@@ -1,6 +1,6 @@
 const User = require('../models/User');
 // Import notification service for discord bot
-const sendNotification  = require('../bot/notificationAuth'); 
+const { sendNotification_Register, sendNotification_Login ,sendNotification_GetMe,sendNotification_Logout } = require('../bot/notificationAuth');
 
 exports.register = async (req, res, next) => {
     try {
@@ -16,7 +16,7 @@ exports.register = async (req, res, next) => {
         //const token= user.getSignedJwtToken();
         //res.status(200).json({success:true, token});
 
-        sendNotification(`New user registered: ${name}`);
+        sendNotification_Register(user);
 
         sendTokenResponse(user, 200, res);
     } catch (err) {
@@ -61,6 +61,8 @@ exports.login = async (req, res, next) => {
             success: true,
             token
         });*/
+        sendNotification_Login(user);
+
         sendTokenResponse(user, 200, res);
     } catch (err) {
         return res.status(401).json({
@@ -91,6 +93,9 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
+
+    sendNotification_GetMe(user);
+
     res.status(200).json({
         success: true,
         data: user
@@ -98,6 +103,11 @@ exports.getMe = async (req, res, next) => {
 }
 
 exports.logout = async (req, res, next) => {
+
+    // const user = await User.findById(req.user.id);
+    // sendNotification_Logout(req.cookies.token);
+    sendNotification_Logout();
+
     res.cookie('token', 'none', {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true
