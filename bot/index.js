@@ -8,23 +8,16 @@ const client = new Client({
     ],
 });
 
-client.on('messageCreate', (message) => {
-    // console.log(message.content);
-    if(message.author.bot) return;
-    if(message.content.startsWith('create')){
-        const url = message.content.split('create')[1];
-        return message.reply({
-            content: `Generting Short ID for ${url}`
-        });
-    }
-    message.reply({
-        content: 'Hello, I am a bot!'
-    });
-});
+//Load env vars
+const dotenv = require('dotenv');
+dotenv.config({path : 'config/config.env'});
 
-client.on('interactionCreate', async interaction => {
-  console.log(interaction)
-  interaction.reply('Pong!');
+
+
+client.on('ready', () => {
+    console.log(`Bot is ready as: ${client.user.tag}`);
 });
 
 client.login(process.env.DISCORD_BOT_TOKEN);
+
+module.exports = client;

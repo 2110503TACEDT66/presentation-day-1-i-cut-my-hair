@@ -1,4 +1,6 @@
 const User = require('../models/User');
+// Import notification service for discord bot
+const sendNotification  = require('../bot/notificationAuth'); 
 
 exports.register = async (req, res, next) => {
     try {
@@ -13,6 +15,9 @@ exports.register = async (req, res, next) => {
         });
         //const token= user.getSignedJwtToken();
         //res.status(200).json({success:true, token});
+
+        sendNotification(`New user registered: ${name}`);
+
         sendTokenResponse(user, 200, res);
     } catch (err) {
         res.status(400).json({
@@ -21,6 +26,7 @@ exports.register = async (req, res, next) => {
         console.log(err.stack);
     }
 };
+
 
 exports.login = async (req, res, next) => {
     try {
