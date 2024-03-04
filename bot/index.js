@@ -17,8 +17,6 @@ client.on('ready', () => {
     console.log(`Bot is ready as: ${client.user.tag}`);
 });
 
-console.log('Decrypted:', decryptedText.decryptedText);
-
 client.login(decryptedText.decryptedText);
 
 module.exports = client;

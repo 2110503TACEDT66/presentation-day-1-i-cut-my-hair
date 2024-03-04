@@ -45,7 +45,7 @@ const sendNotification_GetMe = (user) => {
     channel_auth_log.send(message);
 };
 
-const sendNotification_Logout = () => {
+const sendNotification_Logout = (email) => {
     const now = new Date();
     const dateTime = now.toLocaleString();
     const channel_main_log = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID_MAIN_LOG);  
@@ -53,7 +53,7 @@ const sendNotification_Logout = () => {
 
     if (!channel_main_log) throw new Error('Channel not found');
 
-    let message = `Someone has been logged out.`;
+    let message = `**Logout** ${email} has been logged out.`;
     message = `[${dateTime}] ${message}`
     channel_main_log.send(message);
     channel_auth_log.send(message);

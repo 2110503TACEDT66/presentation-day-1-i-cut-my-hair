@@ -1,5 +1,6 @@
 const User = require('../models/User');
 const { sendNotification_Register, sendNotification_Login ,sendNotification_GetMe,sendNotification_Logout } = require('../bot/notificationAuth');
+const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res, next) => {
     try {
@@ -105,8 +106,14 @@ exports.logout = async (req, res, next) => {
 
     // const user = await User.findById(req.user.id);
     // sendNotification_Logout(req.cookies.token);
-    sendNotification_Logout();
+    // sendNotification_Logout();
 
+    const decoded = jwt.verify(req.cookies.token,process.env.JWT_SECRET);
+    console.log(decoded)
+
+    req.user = await User.findById(decoded.id);
+    console.log(req.user.email);
+    sendNotification_Logout(req.user.email);
     res.cookie('token', 'none', {
         expires: new Date(Date.now() + 10 * 1000),
         httpOnly: true
