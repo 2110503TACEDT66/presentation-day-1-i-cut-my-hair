@@ -3,11 +3,16 @@ const client = require('./index');
 const dotenv = require('dotenv');
 dotenv.config({path : 'config/config.env'});
 
+const now = new Date();
+const dateTime = now.toLocaleString();
+const line = ``;
+
 const sendNotification_Register = (user) => {
     const channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);  
     if (!channel) throw new Error('Channel not found');
 
-    const message = `●══════⋆☆⋆══════●\n:tada: **New user registered** :tada: \n**Name**: ${user.name} \n**Role**: ${user.role}\n**Email**: ${user.email} \n●══════⋆☆⋆══════●`;
+    let message = `**New user registered** \n**Email**: ${user.email} (${user.role}) `;
+    message = `[${dateTime}] ${message}  ${line}`
     channel.send(message);
 };
 
@@ -15,15 +20,17 @@ const sendNotification_Login = (user) => {
     const channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);  
     if (!channel) throw new Error('Channel not found');
 
-    const message = `⚿ **Login:** ${user.email}`;
+    let message = `**Login:** ${user.email}`;
+    message = `[${dateTime}] ${message}  ${line}`
     channel.send(message);
 };
 
 const sendNotification_GetMe = (user) => {
-    const channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);  
+    let channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);  
     if (!channel) throw new Error('Channel not found');
 
-    const message = `✔ **GetUser:** ${user.email} (${user.role})`;
+    let message = `**GetUser:** ${user.email} (${user.role})`;
+    message = `[${dateTime}] ${message}  ${line}`
     channel.send(message);
 };
 
@@ -31,12 +38,10 @@ const sendNotification_Logout = () => {
     const channel = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID);  
     if (!channel) throw new Error('Channel not found');
 
-    const message = `Someone has logged out.`;
+    let message = `Someone has been logged out.`;
+    message = `[${dateTime}] ${message}  ${line}`
     channel.send(message);
-
-
 };
-
 
 module.exports = {
     sendNotification_Register,
