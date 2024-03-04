@@ -1,6 +1,8 @@
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
+const jwt = require('jsonwebtoken');
+const {sendNotification_GetAllRestaurants} = require('../bot/notificationRestaurant');
 
 // @desc Get all restaurant
 // @route   GET /api/v1/restaurant
@@ -59,6 +61,12 @@ exports.getRestaurants = async (req, res, next) => {
                 limit
             }
         }
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
+
+        req.user = await User.findById(decoded.id);
+        // console.log(req.user.email);
+        sendNotification_GetAllRestaurants(req.user.email);
 
         res.status(200).json({
             success: true,
