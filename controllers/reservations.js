@@ -2,6 +2,12 @@ const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
 const Payment = require('../models/Payment');
+const jwt = require('jsonwebtoken');
+const {sendNotification_GetAllReservations,
+    sendNotification_GetOneReservation,
+    sendNotification_CreateReservation,
+    sendNotification_UpdateReservation,
+    sendNotification_DeleteReservation} = require('../bot/notificationReservation');
 
 // @desc    Get all reservations
 // @route   GET /api/v1/restaurants
@@ -38,6 +44,14 @@ exports.getReservations = async (req, res, next) => {
     try {
         const reservation = await query;
 
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
+
+        req.user = await User.findById(decoded.id);
+        // console.log(req.user);
+
+        sendNotification_GetAllReservations(req.user.email,req.user.role);
+
         res.status(200).json({
             success: true,
             count: reservation.length,
@@ -60,7 +74,7 @@ exports.getReservation = async (req, res, next) => {
     try {
         const reservation = await Reservation.findById(req.params.id).populate({
             path: 'restaurant',
-            select: 'name province tel'
+            select: 'name address province tel'
         });
 
         console.log('Reservation:', reservation); // Log the reservation to check if it's null
@@ -88,6 +102,15 @@ exports.getReservation = async (req, res, next) => {
                 msg: `User ${req.user.id} is not authorized to see this reservation`
             });
         }
+        const restaurant = await Restaurant.findById(req.params.restaurantId);
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
+
+        req.user = await User.findById(decoded.id);
+        // console.log(reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate); 
+        sendNotification_GetOneReservation(req.user.email,req.user.role,reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate);
+
+
 
         res.status(200).json({
             success: true,
@@ -173,10 +196,16 @@ exports.createReservation = async (req, res, next) => {
             }
         }
 
-
-
         const reservation = await Reservation.create(req.body);
+        const restaurantName = restaurant.name;
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
 
+        req.user = await User.findById(decoded.id);
+        // console.log(req.user.id);
+
+        sendNotification_CreateReservation(req.user.email,req.user.role,reservation.resvDate,restaurantName,restaurant.address);
+        
         res.status(201).json({
             success: true,
             data: reservation
@@ -332,6 +361,17 @@ exports.updateReservation = async (req, res, next) => {
             new: true,
             runValidators: true
         });
+
+        const reservationData = await Reservation.findById(req.params.id);
+        const restaurantData = await Restaurant.findById(reservationData.restaurant);
+
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
+        
+        req.user = await User.findById(decoded.id);
+        console.log(restaurantData.name , restaurantData.address , reservationData.resvDate ,reservationData.id);
+        sendNotification_UpdateReservation(req.user.email,req.user.role,reservationData.id ,restaurantData.name , restaurantData.address , reservationData.resvDate);
+
         res.status(200).json({
             success: true,
             data: reservation
@@ -366,6 +406,14 @@ exports.deleteReservation = async (req, res, next) => {
             });
         }
 
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
+        
+        req.user = await User.findById(decoded.id);
+        // console.log(req.user.id);
+    
+        sendNotification_DeleteReservation(req.user.email,req.user.role , reservation.id );
+        
         await reservation.deleteOne();
 
         res.status(200).json({
