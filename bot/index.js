@@ -1,4 +1,5 @@
 const {Client, Intents, GatewayIntentBits} = require('discord.js');
+const decryptedText = require('./cryptography');
 
 const client = new Client({
     intents: [
@@ -16,6 +17,8 @@ client.on('ready', () => {
     console.log(`Bot is ready as: ${client.user.tag}`);
 });
 
-client.login(process.env.DISCORD_BOT_TOKEN);
+console.log('Decrypted:', decryptedText.decryptedText);
+
+client.login(decryptedText.decryptedText);
 
 module.exports = client;
