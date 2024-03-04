@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { sendNotification_Register, sendNotification_Login ,sendNotification_GetMe,sendNotification_Logout } = require('../bot/notificationAuth');
+const { sendNotification_Register, sendNotification_Login, sendNotification_GetMe, sendNotification_Logout } = require('../bot/notificationAuth');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res, next) => {
@@ -107,20 +107,26 @@ exports.logout = async (req, res, next) => {
     // const user = await User.findById(req.user.id);
     // sendNotification_Logout(req.cookies.token);
     // sendNotification_Logout();
+    try {
+        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
+        console.log(decoded)
 
-    const decoded = jwt.verify(req.cookies.token,process.env.JWT_SECRET);
-    console.log(decoded)
+        req.user = await User.findById(decoded.id);
+        console.log(req.user.email);
+        sendNotification_Logout(req.user.email);
+        res.cookie('token', 'none', {
+            expires: new Date(Date.now() + 10 * 1000),
+            httpOnly: true
+        });
 
-    req.user = await User.findById(decoded.id);
-    console.log(req.user.email);
-    sendNotification_Logout(req.user.email);
-    res.cookie('token', 'none', {
-        expires: new Date(Date.now() + 10 * 1000),
-        httpOnly: true
-    });
-
-    res.status(200).json({
-        success: true,
-        data: {}
-    });
+        res.status(200).json({
+            success: true,
+            data: {}
+        });
+    } catch (err) {
+        res.status(401).json({
+            success: false,
+            msg: 'Not authorized to access this route'
+        });
+    }
 }
