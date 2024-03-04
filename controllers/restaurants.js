@@ -160,7 +160,7 @@ exports.createRestaurant = async (req, res, next) => {
             req.user = await User.findById(decoded.id);
             // console.log(req.user.id);
 
-            sendNotification_CreateRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address)
+            sendNotification_CreateRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address,mapLink)
             res.status(201).json({
                 success: true,
                 data: restaurant

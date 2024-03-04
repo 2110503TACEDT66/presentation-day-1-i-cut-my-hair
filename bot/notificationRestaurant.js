@@ -47,7 +47,7 @@ const sendNotification_GetOneRestaurant = (email,role,nameRestaurant,address) =>
     channel_restaurant_log.send(message);
 };
 
-const sendNotification_CreateRestaurant = (email,role,nameRestaurant,address) => {
+const sendNotification_CreateRestaurant = (email,role,nameRestaurant,address,mapLink) => {
     const channel_main_log = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID_MAIN_LOG);  
     const channel_restaurant_log = client.channels.cache.get(process.env.DISCORD_CHANNEL_ID_RESTAURANT_LOG);  
     const currentTime = getTimeNow();
@@ -55,7 +55,7 @@ const sendNotification_CreateRestaurant = (email,role,nameRestaurant,address) =>
     if (!channel_main_log) throw new Error('channel_main_log not found');
     if (!channel_restaurant_log) throw new Error('channel_restaurant_log not found');
 
-    let message = `**Create Restaurant** ${email} (${role}) -> ${nameRestaurant} (${address})`;
+    let message = `**Create Restaurant** ${email} (${role}) -> ${nameRestaurant} (${address}\n${mapLink})`;
     message = `[${currentTime}] ${message}`
     channel_main_log.send(message);
     channel_restaurant_log.send(message);
