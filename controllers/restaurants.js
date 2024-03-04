@@ -20,13 +20,15 @@ exports.getRestaurants = async (req, res, next) => {
     queryStr = queryStr.replace(/\b(gt|gte|lt|lte|in)\b/g, match => `$${match}`);
     if(req.user.role === 'admin'){
         query = Restaurant.find(JSON.parse(queryStr)).populate({
-            path: 'reservation'
+            path: 'reservation',
+            populate: {path: 'Payment', select: 'amount paymentMethods'}
         });
     
     }else{
         query = Restaurant.find(JSON.parse(queryStr)).populate({
             path: 'reservation',
-            match: {user: req.user.id}
+            match: {user: req.user.id},
+            populate: {path: 'Payment', select: 'amount paymentMethods'}
         })
     }
 
