@@ -1,5 +1,4 @@
 const User = require('../models/User');
-// Import notification service for discord bot
 const { sendNotification_Register, sendNotification_Login ,sendNotification_GetMe,sendNotification_Logout } = require('../bot/notificationAuth');
 
 exports.register = async (req, res, next) => {

@@ -12,8 +12,6 @@ const client = new Client({
 const dotenv = require('dotenv');
 dotenv.config({path : 'config/config.env'});
 
-
-
 client.on('ready', () => {
     console.log(`Bot is ready as: ${client.user.tag}`);
 });
