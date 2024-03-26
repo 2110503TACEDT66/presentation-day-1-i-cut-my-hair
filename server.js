@@ -45,7 +45,7 @@ const botClient = require('./bot/index');
 
 //Set static folder
 const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, console.log('server running in ',process.env.NODE_ENV, ' mode on port ', PORT));
+const server = app.listen(PORT, console.log('server running in ',process.env.HOST, ':', PORT));
 
 //handle unhandled promise rejection
 process.on('unhandledRejection', (err,promise) => {
