@@ -3,11 +3,7 @@ const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
 const Payment = require('../models/Payment');
 const jwt = require('jsonwebtoken');
-const {sendNotification_GetAllReservations,
-    sendNotification_GetOneReservation,
-    sendNotification_CreateReservation,
-    sendNotification_UpdateReservation,
-    sendNotification_DeleteReservation} = require('../bot/notificationReservation');
+
 
 // @desc    Get all reservations
 // @route   GET /api/v1/restaurants
@@ -50,7 +46,7 @@ exports.getReservations = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user);
 
-        sendNotification_GetAllReservations(req.user.email,req.user.role);
+        //sendNotification_GetAllReservations(req.user.email,req.user.role);
 
         res.status(200).json({
             success: true,
@@ -108,7 +104,7 @@ exports.getReservation = async (req, res, next) => {
 
         req.user = await User.findById(decoded.id);
         // console.log(reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate); 
-        sendNotification_GetOneReservation(req.user.email,req.user.role,reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate);
+        //sendNotification_GetOneReservation(req.user.email,req.user.role,reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate);
 
 
 
@@ -204,7 +200,7 @@ exports.createReservation = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user.id);
 
-        sendNotification_CreateReservation(req.user.email,req.user.role,reservation.resvDate,restaurantName,restaurant.address);
+        //sendNotification_CreateReservation(req.user.email,req.user.role,reservation.resvDate,restaurantName,restaurant.address);
         
         res.status(201).json({
             success: true,
@@ -370,7 +366,7 @@ exports.updateReservation = async (req, res, next) => {
         
         req.user = await User.findById(decoded.id);
         console.log(restaurantData.name , restaurantData.address , reservationData.resvDate ,reservationData.id);
-        sendNotification_UpdateReservation(req.user.email,req.user.role,reservationData.id ,restaurantData.name , restaurantData.address , reservationData.resvDate);
+        //sendNotification_UpdateReservation(req.user.email,req.user.role,reservationData.id ,restaurantData.name , restaurantData.address , reservationData.resvDate);
 
         res.status(200).json({
             success: true,
@@ -412,7 +408,7 @@ exports.deleteReservation = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user.id);
     
-        sendNotification_DeleteReservation(req.user.email,req.user.role , reservation.id );
+        //sendNotification_DeleteReservation(req.user.email,req.user.role , reservation.id );
         
         await reservation.deleteOne();
 
