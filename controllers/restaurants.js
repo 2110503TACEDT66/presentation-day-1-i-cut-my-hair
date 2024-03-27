@@ -2,7 +2,7 @@ const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
 const jwt = require('jsonwebtoken');
-const {sendNotification_GetAllRestaurants , sendNotification_GetOneRestaurant , sendNotification_CreateRestaurant ,sendNotification_UpdateRestaurant , sendNotification_DeleteRestaurant} = require('../bot/notificationRestaurant');
+//const {sendNotification_GetAllRestaurants , sendNotification_GetOneRestaurant , sendNotification_CreateRestaurant ,sendNotification_UpdateRestaurant , sendNotification_DeleteRestaurant} = require('../bot/notificationRestaurant');
 
 // @desc Get all restaurant
 // @route   GET /api/v1/restaurant
@@ -79,7 +79,7 @@ exports.getRestaurants = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user);
 
-        sendNotification_GetAllRestaurants(req.user.email,req.user.role);
+        //sendNotification_GetAllRestaurants(req.user.email,req.user.role);
 
         res.status(200).json({
             success: true,
@@ -114,7 +114,7 @@ exports.getRestaurant = async (req, res, next) => {
         
         req.user = await User.findById(decoded.id);
         // console.log(req.user.id);
-        sendNotification_GetOneRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address)
+        //sendNotification_GetOneRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address)
         res.status(200).json({
             success: true,
             data: restaurant
@@ -160,7 +160,7 @@ exports.createRestaurant = async (req, res, next) => {
             req.user = await User.findById(decoded.id);
             // console.log(req.user.id);
 
-            sendNotification_CreateRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address,mapLink)
+            //sendNotification_CreateRestaurant(req.user.email,req.user.role,restaurant.name,restaurant.address,mapLink)
             res.status(201).json({
                 success: true,
                 data: restaurant
@@ -203,7 +203,7 @@ exports.updateRestaurant = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user.id);
     
-        sendNotification_UpdateRestaurant(req.user.email,req.user.role , restaurant.id);
+        //sendNotification_UpdateRestaurant(req.user.email,req.user.role , restaurant.id);
 
         res.status(200).json({
             success: true,
@@ -239,7 +239,7 @@ exports.deleteRestaurant = async (req, res, next) => {
         req.user = await User.findById(decoded.id);
         // console.log(req.user.id);
     
-        sendNotification_DeleteRestaurant(req.user.email,req.user.role , restaurant.id);
+        //sendNotification_DeleteRestaurant(req.user.email,req.user.role , restaurant.id);
         
         await restaurant.deleteOne();
 
