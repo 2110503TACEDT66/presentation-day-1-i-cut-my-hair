@@ -1,5 +1,5 @@
 const User = require('../models/User');
-const { sendNotification_Register, sendNotification_Login, sendNotification_GetMe, sendNotification_Logout } = require('../bot/notificationAuth');
+// const { sendNotification_Register, sendNotification_Login, sendNotification_GetMe, sendNotification_Logout } = require('../bot/notificationAuth');
 const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res, next) => {
@@ -16,9 +16,9 @@ exports.register = async (req, res, next) => {
         //const token= user.getSignedJwtToken();
         //res.status(200).json({success:true, token});
 
-        sendNotification_Register(user);
+        // sendNotification_Register(user);
 
-        sendTokenResponse(user, 200, res);
+        // sendTokenResponse(user, 200, res);
     } catch (err) {
         res.status(400).json({
             success: false
@@ -61,7 +61,7 @@ exports.login = async (req, res, next) => {
             success: true,
             token
         });*/
-        sendNotification_Login(user);
+        // sendNotification_Login(user);
 
         sendTokenResponse(user, 200, res);
     } catch (err) {
@@ -94,7 +94,7 @@ const sendTokenResponse = (user, statusCode, res) => {
 exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
 
-    sendNotification_GetMe(user);
+    // sendNotification_GetMe(user);
 
     res.status(200).json({
         success: true,
@@ -110,7 +110,7 @@ exports.logout = async (req, res, next) => {
 
         req.user = await User.findById(decoded.id);
         // console.log(req.user.email);
-        sendNotification_Logout(req.user);
+        // sendNotification_Logout(req.user);
 
         res.cookie('token', 'none', {
             expires: new Date(Date.now() + 10 * 1000),
