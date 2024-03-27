@@ -9,6 +9,6 @@ const {protect, authorize} = require('../middleware/auth');
 router.use('/:reservationId/payments/', paymentsRouter);
 
 router.route('/').get(protect, authorize('admin', 'user'), getReservations).post(protect, authorize('user','admin'), createReservation);
-router.route('/:id').get(protect, authorize('admin', 'user'), getReservation).put(protect, authorize('admin'), updateReservation).delete(protect, authorize('admin'), deleteReservation);
+router.route('/:id').get(protect, authorize('admin', 'user'), getReservation).put(protect, authorize('user', 'admin'), updateReservation).delete(protect, authorize('user', 'admin'), deleteReservation);
 
 module.exports = router;
