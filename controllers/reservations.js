@@ -1,9 +1,6 @@
 const User = require('../models/User');
 const Restaurant = require('../models/Restaurant');
 const Reservation = require('../models/Reservation');
-const Payment = require('../models/Payment');
-const jwt = require('jsonwebtoken');
-
 
 // @desc    Get all reservations
 // @route   GET /api/v1/restaurants
@@ -22,7 +19,7 @@ exports.getReservations = async (req, res, next) => {
         //admin see all
         if (req.params.restaurantId) {
             console.log(req.params.restaurantId);
-            query = Reservation.find({ restaurant: req.params.restaurantId }).populate({
+            query = Reservation.find({ hospital: req.params.restaurantId }).populate({
                 path: 'restaurant',
                 select: 'name province tel'
             });
@@ -39,14 +36,6 @@ exports.getReservations = async (req, res, next) => {
 
     try {
         const reservation = await query;
-
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
-
-        req.user = await User.findById(decoded.id);
-        // console.log(req.user);
-
-        //sendNotification_GetAllReservations(req.user.email,req.user.role);
 
         res.status(200).json({
             success: true,
@@ -70,10 +59,8 @@ exports.getReservation = async (req, res, next) => {
     try {
         const reservation = await Reservation.findById(req.params.id).populate({
             path: 'restaurant',
-            select: 'name address province tel'
+            select: 'name province tel'
         });
-
-        console.log('Reservation:', reservation); // Log the reservation to check if it's null
 
         if (!reservation) {
             return res.status(404).json({
@@ -82,48 +69,18 @@ exports.getReservation = async (req, res, next) => {
             });
         }
 
-        const payment = await Payment.findOne({ reservation: req.params.id });
-
-        console.log('Payment:', payment); // Log the payment to check if it's null
-
-        let paymentMessage = 'No payment for this reservation';
-        if (payment) {
-            paymentMessage = payment;
-        }
-
-        // Ensure user is authorized to view this reservation
-        if (reservation.user.toString() !== req.user.id && req.user.role !== 'admin') {
-            return res.status(400).json({
-                success: false,
-                msg: `User ${req.user.id} is not authorized to see this reservation`
-            });
-        }
-        const restaurant = await Restaurant.findById(req.params.restaurantId);
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
-
-        req.user = await User.findById(decoded.id);
-        // console.log(reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate); 
-        //sendNotification_GetOneReservation(req.user.email,req.user.role,reservation.restaurant.name , reservation.restaurant.address , reservation.resvDate);
-
-
-
         res.status(200).json({
             success: true,
-            data: {
-                reservation: reservation,
-                payment: paymentMessage
-            }
+            data: reservation
         });
     } catch (err) {
-        console.log(err); // Log any errors that occur
+        console.log(err);
         return res.status(500).json({
             success: false,
-            msg: 'An error occurred while fetching the reservation'
+            msg: 'Cannot find reservation'
         });
     }
 }
-
 
 //@desc Post single reservation
 //@route POST /api/v1/restaurants/:id
@@ -192,16 +149,10 @@ exports.createReservation = async (req, res, next) => {
             }
         }
 
+
+
         const reservation = await Reservation.create(req.body);
-        const restaurantName = restaurant.name;
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
 
-        req.user = await User.findById(decoded.id);
-        // console.log(req.user.id);
-
-        //sendNotification_CreateReservation(req.user.email,req.user.role,reservation.resvDate,restaurantName,restaurant.address);
-        
         res.status(201).json({
             success: true,
             data: reservation
@@ -357,17 +308,6 @@ exports.updateReservation = async (req, res, next) => {
             new: true,
             runValidators: true
         });
-
-        const reservationData = await Reservation.findById(req.params.id);
-        const restaurantData = await Restaurant.findById(reservationData.restaurant);
-
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
-        
-        req.user = await User.findById(decoded.id);
-        console.log(restaurantData.name , restaurantData.address , reservationData.resvDate ,reservationData.id);
-        //sendNotification_UpdateReservation(req.user.email,req.user.role,reservationData.id ,restaurantData.name , restaurantData.address , reservationData.resvDate);
-
         res.status(200).json({
             success: true,
             data: reservation
@@ -402,14 +342,6 @@ exports.deleteReservation = async (req, res, next) => {
             });
         }
 
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
-        
-        req.user = await User.findById(decoded.id);
-        // console.log(req.user.id);
-    
-        //sendNotification_DeleteReservation(req.user.email,req.user.role , reservation.id );
-        
         await reservation.deleteOne();
 
         res.status(200).json({

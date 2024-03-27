@@ -1,6 +1,4 @@
 const User = require('../models/User');
-// const { sendNotification_Register, sendNotification_Login, sendNotification_GetMe, sendNotification_Logout } = require('../bot/notificationAuth');
-const jwt = require('jsonwebtoken');
 
 exports.register = async (req, res, next) => {
     try {
@@ -15,10 +13,7 @@ exports.register = async (req, res, next) => {
         });
         //const token= user.getSignedJwtToken();
         //res.status(200).json({success:true, token});
-
-        // sendNotification_Register(user);
-
-        // sendTokenResponse(user, 200, res);
+        sendTokenResponse(user, 200, res);
     } catch (err) {
         res.status(400).json({
             success: false
@@ -26,7 +21,6 @@ exports.register = async (req, res, next) => {
         console.log(err.stack);
     }
 };
-
 
 exports.login = async (req, res, next) => {
     try {
@@ -61,8 +55,6 @@ exports.login = async (req, res, next) => {
             success: true,
             token
         });*/
-        // sendNotification_Login(user);
-
         sendTokenResponse(user, 200, res);
     } catch (err) {
         return res.status(401).json({
@@ -93,9 +85,6 @@ const sendTokenResponse = (user, statusCode, res) => {
 
 exports.getMe = async (req, res, next) => {
     const user = await User.findById(req.user.id);
-
-    // sendNotification_GetMe(user);
-
     res.status(200).json({
         success: true,
         data: user
@@ -103,28 +92,13 @@ exports.getMe = async (req, res, next) => {
 }
 
 exports.logout = async (req, res, next) => {
+    res.cookie('token', 'none', {
+        expires: new Date(Date.now() + 10 * 1000),
+        httpOnly: true
+    });
 
-    try {
-        const decoded = jwt.verify(req.cookies.token, process.env.JWT_SECRET);
-        console.log(decoded)
-
-        req.user = await User.findById(decoded.id);
-        // console.log(req.user.email);
-        // sendNotification_Logout(req.user);
-
-        res.cookie('token', 'none', {
-            expires: new Date(Date.now() + 10 * 1000),
-            httpOnly: true
-        });
-
-        res.status(200).json({
-            success: true,
-            data: {}
-        });
-    } catch (err) {
-        res.status(401).json({
-            success: false,
-            msg: 'Not authorized to access this route'
-        });
-    }
+    res.status(200).json({
+        success: true,
+        data: {}
+    });
 }
