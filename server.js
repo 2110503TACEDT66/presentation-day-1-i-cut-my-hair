@@ -41,7 +41,7 @@ app.use('/api/v1/reservations', reservation );
 app.use('/api/v1/payments',payments);
 
 // Discord bot API
-const botClient = require('./bot/index');
+// const botClient = require('./bot/index');
 
 //Set static folder
 const PORT = process.env.PORT || 5000;
